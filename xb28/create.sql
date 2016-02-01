@@ -1,0 +1,308 @@
+DROP TABLE IF EXISTS `xb_mcpay_detail`;
+CREATE TABLE `xb_mcpay_detail` (
+  `log_id` int(11) NOT NULL COMMENT 'xb_fbsdk_log ID ',
+  `FUNNAM` varchar(50) DEFAULT NULL COMMENT 'API名字',
+  `YURREF` varchar(30) DEFAULT NULL COMMENT '业务参考号',
+  `TRSAMT` decimal(11,2) DEFAULT NULL COMMENT '金额',
+  `CRTSQN` varchar(20) DEFAULT NULL COMMENT '收方编号',
+  `CDTNAM_CRTNAM` varchar(100) DEFAULT NULL COMMENT '收款人户名',
+  `CDTEAC_CRTACC` varchar(35) DEFAULT NULL COMMENT '收款人账号',
+  `CDTBRD` varchar(12) DEFAULT NULL COMMENT '收款行行号',
+  `RTNFLG` varchar(2) DEFAULT NULL COMMENT '业务处理结果',
+  `ERRTXT` varchar(100) DEFAULT NULL COMMENT '错误文本',
+  `ERRCOD` varchar(10) DEFAULT NULL COMMENT '错误代码',
+  `REQNBR` varchar(12) DEFAULT NULL COMMENT '流程实例号',
+  `REQSTS` varchar(5) DEFAULT NULL COMMENT '请求状态',
+  `RTNTIM` varchar(5) DEFAULT NULL COMMENT '等待时间',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '时间',
+  PRIMARY KEY (`log_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='支付接口调用详情';
+
+
+
+CREATE TABLE `xb_withdraw_order` (
+  `order_id` bigint(26) NOT NULL COMMENT '提现订单流水',
+  `uid` int(11) NOT NULL COMMENT '账户ID',
+  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '提现状态0：已申请，1：提现中，2：提现成功，3：提现失败',
+  `payway_id` int(11) NOT NULL,
+  `amount` decimal(30,2) DEFAULT NULL COMMENT '提现金额',
+  `rest_amount` decimal(30,2) DEFAULT NULL COMMENT '余额',
+  `from_personal_amt` decimal(30,2) DEFAULT NULL COMMENT '提现金额-成分-个人资金池',
+  `from_company_amt` decimal(30,2) DEFAULT NULL COMMENT '提现金额-成分-企业资金池',
+  `from_company_id` int(11) DEFAULT NULL COMMENT '提现时，用户属于哪个公司',
+  `success_at` timestamp NULL DEFAULT NULL COMMENT '成功时间',
+  `failed_at` timestamp NULL DEFAULT NULL COMMENT '失败时间',
+  `reason` varchar(100) DEFAULT '' COMMENT '失败原因',
+  `withdraw_card_no` varchar(40) DEFAULT '0' COMMENT '提现账户',
+	`withdraw_pay_name` varchar(40) DEFAULT '0' COMMENT '提现账户银行名称',
+  `info` varchar(100) DEFAULT '' COMMENT '备注',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '申请时间',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '处理时间',
+  PRIMARY KEY (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='提现订单';
+
+
+ALTER TABLE xb_withdraw_order CHANGE COLUMN failed_card_no withdraw_card_no  varchar(40) DEFAULT '0'  COMMENT '提现账户';
+ALTER TABLE xb_withdraw_order ADD COLUMN withdraw_pay_name varchar(40) DEFAULT '0' COMMENT '提现账户银行名称' AFTER withdraw_card_no;
+
+ALTER TABLE xb_withdraw_order ADD COLUMN failed_card_no varchar(40) DEFAULT '0' COMMENT '打款账户' AFTER reason,
+
+
+CREATE TABLE `xb_user_payway` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL COMMENT '用户账户ID',
+  `card_no` varchar(40) DEFAULT '0' COMMENT '打款账户',
+  `pay_name` varchar(40) DEFAULT '0' COMMENT '打款方式名称，银行名称',
+  `pay_type` tinyint(2) DEFAULT '1' COMMENT '打款方式 1银行卡',
+  `company_id` int(11) NOT NULL COMMENT '用户所属公司账户ID',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8 COMMENT='用户支付方式表';
+
+
+
+
+
+//funnam
+CREATE TABLE `xb_fbsdk_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` bigint(26) NOT NULL COMMENT '提现订单流水',
+  `login_name` varchar(50) DEFAULT NULL COMMENT '登录账户名',
+  `send_url` varchar(50) DEFAULT NULL COMMENT '发送的URL',
+  `send_xml` text COMMENT '发送的XML',
+  `send_status` smallint(2) DEFAULT '0' COMMENT '发送状态0失败，1成功',
+  `send_error` varchar(100) DEFAULT NULL COMMENT '错误信息',
+  `received_xml` text COMMENT '接收到的XML',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '时间',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=516 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='fbsdk_log';
+
+
+
+
+
+
+DROP TABLE  IF EXISTS `xb_join_quit_log`;
+CREATE TABLE `xb_join_quit_log` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+	`uid` int(11) NULL COMMENT '账户ID',
+    `company_id` int(11) NULL COMMENT '企业ID',
+    `event` smallint(5) NOT NULL COMMENT '事件类别，1入职，2离职，3开始合作，4取消合作',
+    `context` varchar(255) DEFAULT NULL COMMENT '事件相关参数',
+    `relation_id` bigint(26) NULL COMMENT '事件关联ID',
+    `happened_at` timestamp NULL  COMMENT '时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='离职-入职-取消合作-开始合作-事件表';
+
+
+
+DROP TABLE  IF EXISTS `xb_company_bankroll`;
+CREATE TABLE `xb_company_bankroll` (
+    `company_id` int(11) NOT NULL COMMENT '账户ID',
+    `company_amount` decimal(30,2) DEFAULT 0 COMMENT '企业资金池余额，该企业下的员工的企业资金池总额',
+    `profit_amount` decimal(30,2) DEFAULT 0 COMMENT '累计收益，企业可用资金',
+    `salary_amount` decimal(30,2) DEFAULT 0 COMMENT '发放工资总额',
+	`tax_amount` decimal(30,2) DEFAULT 0 COMMENT '工资含税总额',
+    `created_at` timestamp NULL  COMMENT '时间',
+    `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`company_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='企业资金账户表';
+
+DROP TABLE  IF EXISTS `xb_company_bill`;
+CREATE TABLE `xb_company_bill` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `company_id` int(11) NOT NULL COMMENT '账户ID',
+    `amount` decimal(30,2) DEFAULT '0.00' COMMENT '金额',
+    `inout` tinyint(2) NOT NULL DEFAULT '0' COMMENT '收入支出0：支出，1.收入,2转账',
+    `event_type` smallint(5) DEFAULT '0' COMMENT '事件类别，0收益，1薪资发放，2提现，3提现失败返回，4离职企业资金池转入个人资金池,5取消合作',
+    `event_name` varchar(100) DEFAULT NULL COMMENT '事件名称',
+    `after_rest_amt` decimal(30,2) DEFAULT 0 COMMENT '之后余额',
+    `relation_id` bigint(26) NULL COMMENT '事件关联ID，et = 0 company_profit_id,salary_pay_id,withdraw_id',
+    `relation_uid` int(11) NULL COMMENT '事件关联UID',
+    `created_at` timestamp NULL  COMMENT '时间',
+    `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='企业资金池变动表';
+
+DROP TABLE  IF EXISTS `xb_company_profit`;
+CREATE TABLE `xb_company_profit` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `company_id` int(11) NOT NULL COMMENT '企业ID',
+    `date` date NULL DEFAULT NULL COMMENT '日期',
+    `principal` decimal(30,2) NOT NULL DEFAULT '0.00' COMMENT '计息本金',
+    `interest_rate` decimal(11,4) DEFAULT '0.0000' COMMENT '计息比例',
+    `income_rate` decimal(11,4) DEFAULT '0.0000' COMMENT '收益率',
+    `profit_rate` decimal(11,4) DEFAULT '0.0000' COMMENT '收益分配比例',
+    `profit` decimal(30,2) DEFAULT 0 COMMENT '收益金额',
+    `cumulative_profit` decimal(30,2) DEFAULT 0 COMMENT '累计收益金额',
+   	`after_principal` decimal(30,2) DEFAULT 0 COMMENT '收益后的-收益本金',
+    `created_at` timestamp NULL  COMMENT '时间',
+    `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='企业收益表';
+
+DROP TABLE  IF EXISTS `xb_user_profit`;
+CREATE TABLE `xb_user_profit` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `uid` int(11) NOT NULL COMMENT '用户ID',
+    `date` date NULL DEFAULT NULL COMMENT '日期',
+    `principal` decimal(30,2) NOT NULL DEFAULT '0.00' COMMENT '计息本金',
+    `income_rate` decimal(11,4) DEFAULT '0.0000' COMMENT '收益率',
+    `profit` decimal(30,2) DEFAULT 0 COMMENT '收益金额',
+    `personal_profit` decimal(30,2) DEFAULT 0 COMMENT '收益金额-个人资金池所得收益',
+    `company_profit` decimal(30,2) DEFAULT 0 COMMENT '收益金额-企业资金池所得收益',
+    `cumulative_profit` decimal(30,2) DEFAULT 0 COMMENT '累计收益金额',
+    `after_rest_amt` decimal(30,2) DEFAULT 0 COMMENT '收益后的-收益本金',
+    `after_personal_amt` decimal(30,2) DEFAULT 0 COMMENT '收益后的-收益本金-个人部分',
+    `after_company_amt` decimal(30,2) DEFAULT 0 COMMENT '收益后的-收益本金-企业部分',
+    
+    `after_company_id` int(11) NULL COMMENT '收益后的个人企业资金池-对应的公司ID',
+    
+    `created_at` timestamp NULL  COMMENT '时间',
+    `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `date` (`date`) USING BTREE,
+    KEY `uid` (`uid`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户收益表';
+
+DROP TABLE  IF EXISTS `xb_user_bankroll`;
+CREATE TABLE `xb_user_bankroll` (
+    `uid` int(11) NOT NULL COMMENT '账户ID',
+    `rest_amount` decimal(30,2) DEFAULT 0 COMMENT '账户余额，个人资金 + 企业资金',
+    `personal_amount` decimal(30,2) DEFAULT 0 COMMENT '个人资金池余额，离职企业薪资+个人收益',
+    `company_amount` decimal(30,2) DEFAULT 0 COMMENT '企业资金池余额，当前所在公司发放的薪资总额',
+    `withdraw_amount` decimal(30,2) DEFAULT 0 COMMENT '提现资金池，所有的提现成功金额',
+    `tax_amount` decimal(30,2) DEFAULT 0 COMMENT '交税资金池，所有交的税',
+    `salary_amount` decimal(30,2) DEFAULT 0 COMMENT '薪资资金池，所有薪资',
+    `profit_amount` decimal(30,2) DEFAULT 0 COMMENT '收益资金池，所有收益，昨日余额*收益率',
+    `created_at` timestamp NULL  COMMENT '时间',
+    `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户资金表';
+DROP TABLE  IF EXISTS `xb_user_bill`;
+CREATE TABLE `xb_user_bill` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `uid` int(11) NOT NULL COMMENT '账户ID',
+    `amount` decimal(30,2) DEFAULT '0.00' COMMENT '金额',
+    `inout` tinyint(2) NOT NULL DEFAULT '0' COMMENT '收入支出0：支出，1.收入,2转账',
+    `event_type` smallint(5) DEFAULT '0' COMMENT '事件类别，0收益，1薪资发放，2提现，3提现失败返回，4离职企业资金池转入个人资金池,5企业取消合作',
+    `event_name` varchar(100) DEFAULT NULL COMMENT '事件名称',
+    `after_rest_amt` decimal(30,2) DEFAULT 0 COMMENT '之后余额',
+    `after_personal_amt` decimal(30,2) DEFAULT 0 COMMENT '之后个人资金池余额',
+    `after_company_amt` decimal(30,2) DEFAULT 0 COMMENT '之后企业资金池余额',
+    `relation_id` bigint(26) NULL COMMENT '事件关联ID，',
+    `created_at` timestamp NULL  COMMENT '时间',
+    `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户账单表';
+
+UPDATE `xb_salary_order` SET `status` = 3,`pay_at` = NULL WHERE `status` = 4;
+UPDATE `xb_salary_pay` SET `pay_status` = 1,`pay_at` = NULL ;
+
+
+
+#DROP TABLE  IF EXISTS `xb_withdraw_order`;
+#CREATE TABLE `xb_withdraw_order` (
+#  `order_id` bigint(26) NOT NULL COMMENT '提现订单流水',
+#  `uid` int(11) NOT NULL COMMENT '账户ID',
+#  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '提现状态0：已申请，1：提现中，2：提现成功，3：提现失败',
+#  `payway_id` int(11) NOT NULL COMMENT '',
+#  `amount` decimal(30,2) DEFAULT NULL COMMENT '提现金额',
+#  `rest_amount` decimal(30,2) DEFAULT NULL COMMENT '余额',
+##提现金额来源
+#  `from_personal_amt` decimal(30,2) DEFAULT NULL COMMENT '提现金额-成分-个人资金池',
+#  `from_company_amt` decimal(30,2) DEFAULT NULL COMMENT '提现金额-成分-企业资金池',
+##记录提现时，用户属于哪个公司
+#  `from_company_id` int(11) NULL COMMENT '提现时，用户属于哪个公司',
+#  `success_at` timestamp NULL DEFAULT NULL COMMENT '成功时间',
+#  `failed_at` timestamp NULL DEFAULT NULL COMMENT '失败时间',
+#
+#  `reason` varchar(100) DEFAULT '' COMMENT '失败原因',
+#  `info` varchar(100) DEFAULT '' COMMENT '备注',
+#  `created_at` timestamp NULL DEFAULT NULL COMMENT '申请时间',
+#  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '处理时间',
+#  PRIMARY KEY (`order_id`)
+#) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='提现订单';
+
+#ALTER TABLE `xb_withdraw_order` ADD COLUMN `from_company_id` int(11) NULL COMMENT '提现时，用户属于哪个公司' AFTER `from_company_amt` ;
+
+
+#
+#DROP TABLE  IF EXISTS `xb_income_rate_setting`;
+#CREATE TABLE `xb_income_rate_setting` (
+#  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+#  `date` date NULL DEFAULT NULL COMMENT '日期',
+#  `principal` decimal(30,2) NOT NULL DEFAULT '0.00' COMMENT '计息金额',
+#  `rate` decimal(11,4) DEFAULT '0.0000' COMMENT '收益率，0-100',
+#  `operator_id`  varchar(11) NOT NULL COMMENT '操作人ID',
+#  `created_at` timestamp NULL DEFAULT NULL,
+#  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+#  PRIMARY KEY (`id`)
+#) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='七日年化收益设置';
+UPDATE xb_user_company SET created_at='2015-08-25 16:52:20' WHERE id <= 6;
+DROP PROCEDURE IF EXISTS 	`set_table_date`;
+CREATE PROCEDURE `set_table_date`(
+	IN in_table_name VARCHAR(30),
+	IN in_col_name VARCHAR(30),
+	IN in_select_col VARCHAR(30),
+  	IN in_select_val VARCHAR(30),
+	IN in_days int(11)
+)
+BEGIN   
+	DECLARE forward_seconds INT(11);  
+	DECLARE exec_sql VARCHAR(500);   
+	DECLARE has_updated_at VARCHAR(50);
+	DECLARE updated_at_val VARCHAR(50);
+	SET forward_seconds = 86400 * in_days;
+	SET @update_sql =  CONCAT('UPDATE ',in_table_name,' SET ',in_col_name,' = FROM_UNIXTIME(UNIX_TIMESTAMP(',in_col_name,') + ',forward_seconds,')',' WHERE ',in_select_col,' = "',in_select_val,'"');
+	prepare stmt from @update_sql; 
+	EXECUTE stmt;     
+	deallocate prepare stmt;   
+END;
+
+
+DROP PROCEDURE IF EXISTS 	`set_table_date_iv`;
+CREATE PROCEDURE `set_table_date_iv`(
+	IN in_table_name VARCHAR(30),
+	IN in_col_name VARCHAR(30),
+	IN in_select_col VARCHAR(30),
+  	IN in_select_val VARCHAR(30),
+	IN in_days int(11),
+	IN in_iv int(11)
+)
+BEGIN   
+	DECLARE forward_seconds INT(11);  
+	DECLARE exec_sql VARCHAR(500);   
+	DECLARE has_updated_at VARCHAR(50);
+	DECLARE updated_at_val VARCHAR(50);
+	SET forward_seconds = 86400 * in_days + in_iv;
+	SET @update_sql =  CONCAT('UPDATE ',in_table_name,' SET ',in_col_name,' = FROM_UNIXTIME(UNIX_TIMESTAMP(',in_col_name,') + ',forward_seconds,')',' WHERE ',in_select_col,' = "',in_select_val,'"');
+	prepare stmt from @update_sql; 
+	EXECUTE stmt;     
+	deallocate prepare stmt;   
+END;
+
+DROP PROCEDURE IF EXISTS 	`set_table_forced_date`;
+CREATE PROCEDURE `set_table_forced_date`(
+	IN in_table_name VARCHAR(30),
+	IN in_col_name VARCHAR(30),
+	IN in_select_col VARCHAR(30),
+  IN in_select_val VARCHAR(30),
+	IN in_forced_date VARCHAR(30)
+)
+BEGIN   
+	DECLARE forward_seconds INT(11);  
+	DECLARE exec_sql VARCHAR(500);   
+	DECLARE has_updated_at VARCHAR(50);
+	DECLARE updated_at_val VARCHAR(50);
+	SET @update_sql =  CONCAT('UPDATE ',in_table_name,' SET ',in_col_name,' = \'',in_forced_date,'\'',' WHERE ',in_select_col,' = "',in_select_val,'"');
+	prepare stmt from @update_sql; 
+	EXECUTE stmt;     
+	deallocate prepare stmt;   
+END;
+
+
+
+COMMIT;
