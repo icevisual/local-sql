@@ -7,14 +7,16 @@ show variables like 'log_bin_trus%'
 
 
 DROP FUNCTION IF EXISTS `_rand_timestamp`;
-CREATE FUNCTION `_rand_timestamp`()
+CREATE FUNCTION `_rand_timestamp`(
+	_in_day int(11)
+)
 RETURNS int(10)
 BEGIN
 	DECLARE _return int(10);
-	SET _return  = UNIX_TIMESTAMP() - round( (RAND() * 10 ) * 86400 ) ;
-	RETURN (_return);
+	SET _return  = UNIX_TIMESTAMP() - round( (RAND() * _in_day ) * 86400 ) ;
+	RETURN _return;
 END
-
+SELECT _rand_timestamp();
 
 
 
@@ -74,7 +76,7 @@ ALTER TABLE up_member_account  AUTO_INCREMENT=1
 SET @_mid = 0;
 
 SET @_mid = @_mid + 1;
-set @_time =  _rand_timestamp();
+set @_time =  _rand_timestamp(100);
 SET @_mobile = _rand_mobile();
 INSERT INTO `intelligentmask`.`up_member_account` (
 	`mid`,
@@ -105,7 +107,7 @@ VALUES
 		@_time,
 		concat('adabb000',@_mobile)
 	);
-set @_time =  _rand_timestamp();
+set @_time =  _rand_timestamp(100);
 INSERT INTO `intelligentmask`.`up_member_equipment` (
 	`member_id`,
 	`production_date`,
@@ -120,7 +122,7 @@ INSERT INTO `intelligentmask`.`up_member_equipment` (
 VALUES
 	(
 		@_mid,
-		_rand_timestamp(),
+		_rand_timestamp(100),
 		CONCAT('MK',_rand_lnumber(6)),
 		'2',
 		'2',
@@ -134,19 +136,65 @@ VALUES
 SELECT MAX(mid) INTO @_mid FROM up_member_account;
 SELECT @_mid ;
 
+CALL _multi_exec(5005);
 
 
-CREATE  PROCEDURE `_multi_exec`()
+DELETE FROM up_member_request WHERE id > 2000
+
+DROP PROCEDURE IF EXISTS `_multi_exec_func`;
+CREATE  PROCEDURE `_multi_exec_func`()
+BEGIN
+	set @_time =  _rand_timestamp(100);
+				INSERT INTO `intelligentmask`.`up_member_request` (
+					`mode`,
+					`member_id`,
+					`latitude`,
+					`longitude`,
+					`report_time`,
+					`city_name`,
+					`update_time`,
+					`create_time`,
+					`report_ip`,
+					`val_data`,
+					`geohash`
+				)
+				VALUES
+					(
+						'1',
+						_rand_range(1,1000),
+						round(120.22 + RAND() * 10 - 5, 2),
+						round(30.22 + RAND() * 10 - 5, 2),
+						@_time ,
+						'杭州',
+						@_time,
+						@_time,
+						'10.67.33.21',
+						round(200 + RAND() * 100 - 50,2),
+						NULL
+					);
+END;
+
+
+
+
+DROP PROCEDURE IF EXISTS `_multi_exec`;
+CREATE  PROCEDURE `_multi_exec`(
+	_in_time int(11)
+)
 BEGIN
 	DECLARE _time int(11);
 	DECLARE _i int(11);
 	SET _i = 0;
-	WHILE _i < _time DO
-	
+	START  TRANSACTION  ;
+	WHILE _i < _in_time DO
+			CALL _multi_exec_func();
+			SET _i = _i + 1;
+	END WHILE;
+	COMMIT;
+END;
 
 
-
-set @_time =  _rand_timestamp();
+set @_time =  _rand_timestamp(100);
 INSERT INTO `intelligentmask`.`up_member_request` (
 	`mode`,
 	`member_id`,

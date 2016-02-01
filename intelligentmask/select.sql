@@ -1,4 +1,88 @@
 
+SELECT
+	COUNT(member_id) as today_num
+FROM
+	(
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					member_id,
+					report_time
+				FROM
+					`up_member_request`
+				WHERE
+					`mode` = '1'
+				ORDER BY
+					report_time
+			) AS aa
+		GROUP BY
+			`member_id`
+	) a
+WHERE
+	report_time > '1454256000'
+
+
+SELECT b.member_id,b.report_time FROM (
+SELECT * FROM up_member_request WHERE report_time < 1454256000) as a
+
+RIGHT JOIN (
+SELECT * FROM up_member_request WHERE report_time > 1454256000 ) as b 
+ON a.member_id = b.member_id
+WHERE a.member_id is null 
+
+
+SELECT report_at,COUNT(DISTINCT member_id) day_num FROM (
+SELECT
+    *
+FROM
+    (SELECT member_id,FROM_UNIXTIME(report_time,'%Y-%m-%d')  report_at FROM up_member_request 
+    where report_time > '$start'
+    ORDER BY report_time ASC) a
+GROUP BY
+    member_id
+) aa GROUP BY report_at
+
+
+SELECT
+	report_at,
+	COUNT(DISTINCT member_id) day_num
+FROM
+	(
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					member_id,
+					FROM_UNIXTIME(report_time, '%Y-%m-%d') report_at
+				FROM
+					up_member_request
+				ORDER BY
+					report_time ASC
+			) a
+		GROUP BY
+			member_id
+	) aa
+WHERE
+	report_at > '12'
+GROUP BY
+	report_at
+
+
+
+254	1	54
+290	1	92
+126	1	104
+327	1	109
+195	1	230
+253	1	279
+180	1	341
+110	1	518
+
+SELECT * FROM up_member_request WHERE member_id = 54
+
 
 
 SELECT TO_DAYS( NOW())
