@@ -3,6 +3,39 @@ set global log_bin_trust_function_creators=1;
 show variables like 'log_bin_trus%'
 
 
+CREATE
+[DEFINER = { user | CURRENT_USER }]
+TRIGGER trigger_name
+trigger_time trigger_event
+ON tbl_name FOR EACH ROW
+[trigger_order]
+trigger_body
+
+
+trigger_time: { BEFORE | AFTER }
+trigger_event: { INSERT | UPDATE | DELETE }
+trigger_order: { FOLLOWS | PRECEDES } other_trigger_name
+
+DROP TRIGGER IF EXISTS `trigger_name`;
+
+CREATE TRIGGER trigger_name BEFORE INSERT ON up_member_request FOR EACH ROW
+SET NEW.date = FROM_UNIXTIME(UNIX_TIMESTAMP(),'%Y-%m-%d');
+
+CALL _multi_exec_func();
+
+SELECT FROM_UNIXTIME(UNIX_TIMESTAMP(),'%Y-%m-%d')
+
+SHOW TRIGGERS
+
+
+DROP EVENT IF EXISTS `myevent`;
+
+CREATE EVENT myevent ON COMPLETION COMMENT 'A sample comment.' DO
+	UPDATE intelligentmask.up_member_request
+SET date = DATE('%Y-%m-%d');
+
+ALTER TABLE up_member_request add COLUMN date date COMMENT '上报时间' AFTER report_time
+
 
 
 
@@ -144,7 +177,7 @@ DELETE FROM up_member_request WHERE id > 2000
 DROP PROCEDURE IF EXISTS `_multi_exec_func`;
 CREATE  PROCEDURE `_multi_exec_func`()
 BEGIN
-	set @_time =  _rand_timestamp(100);
+	set @_time =  _rand_timestamp(18);
 				INSERT INTO `intelligentmask`.`up_member_request` (
 					`mode`,
 					`member_id`,
@@ -161,7 +194,7 @@ BEGIN
 				VALUES
 					(
 						'1',
-						_rand_range(1,1000),
+						_rand_range(1,100000),
 						round(120.22 + RAND() * 10 - 5, 2),
 						round(30.22 + RAND() * 10 - 5, 2),
 						@_time ,
@@ -211,7 +244,7 @@ INSERT INTO `intelligentmask`.`up_member_request` (
 VALUES
 	(
 		'1',
-		_rand_range(1,@_mid),
+		_rand_range(1,1000),
 		round(120.22 + RAND() * 10 - 5, 2),
 		round(30.22 + RAND() * 10 - 5, 2),
 		@_time ,

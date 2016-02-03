@@ -1,4 +1,12 @@
 
+
+
+SELECT latitude,longitude,FROM_UNIXTIME(report_time),FROM_UNIXTIME(update_time),FROM_UNIXTIME(create_time)
+ FROM up_member_request ORDER BY create_time DESC
+
+DESC up_member_request
+
+
 SELECT
 	COUNT(member_id) as today_num
 FROM
