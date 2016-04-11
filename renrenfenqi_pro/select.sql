@@ -1,4 +1,42 @@
 
+GRANT SELECT ON renrenfenqi_pro.ecs_repayment_gather TO 'selectuser'@'%' IDENTIFIED BY 'Ara3eJCO5xmyBxT0';
+FLUSH PRIVILEGES;
+
+
+
+
+
+DROP PROCEDURE IF EXISTS `tst`;
+CREATE PROCEDURE `tst`()
+BEGIN 
+	SELECT
+		SUBSTR(`year_month` FROM 1 FOR 7) AS '月份',
+		ROUND(SUM(cal_repayment_money)/100,2) AS '应还本金',
+		ROUND(SUM(late_fee)/100,2) AS '应还滞纳金',
+		COUNT(DISTINCT uid)  AS '未还人数'
+	FROM
+		ecs_repayment_gather
+	WHERE
+		`status` < 3
+	GROUP BY
+		`year_month`;
+	SELECT
+		ROUND(SUM(cal_repayment_money)/100,2) AS '应还本金总计',
+		ROUND(SUM(late_fee)/100,2) AS '应还滞纳金总计',
+		COUNT(DISTINCT uid)  AS '未还人数总计'
+	FROM
+		ecs_repayment_gather
+	WHERE
+		`status` < 3;
+END
+
+CALL tst();
+
+
+
+
+
+
 UPDATE `renrenfenqi_pro`.`ecs_pay_bill_job` SET `bill_id`='8026', `uid`='34483', `business_no`='14273642186910', `bill_no`='1427364218691001', `period`='1', `repayment_day`='2015-08-25', `repayment_money`='50000', `real_pay_day`=NULL, `real_pay_money`='50000', `late_fee`='0', `status`='3', `pay_way`=NULL, `from`=NULL, `created_at`='2015-08-11 14:58:46', `updated_at`='2015-09-02 10:10:10', `deleted_at`=NULL WHERE (`bill_id`='8026');
 UPDATE `renrenfenqi_pro`.`ecs_pay_bill_job` SET `bill_id`='8027', `uid`='34483', `business_no`='14273642186910', `bill_no`='1427364218691002', `period`='2', `repayment_day`='2015-09-25', `repayment_money`='50000', `real_pay_day`=NULL, `real_pay_money`='50000', `late_fee`=NULL, `status`='3', `pay_way`=NULL, `from`=NULL, `created_at`='2015-08-11 14:58:46', `updated_at`='2015-09-02 10:10:10', `deleted_at`=NULL WHERE (`bill_id`='8027');
 UPDATE `renrenfenqi_pro`.`ecs_pay_bill_job` SET `bill_id`='8028', `uid`='34483', `business_no`='14273642186910', `bill_no`='1427364218691003', `period`='3', `repayment_day`='2015-10-25', `repayment_money`='50000', `real_pay_day`=NULL, `real_pay_money`='50000', `late_fee`=NULL, `status`='3', `pay_way`=NULL, `from`=NULL, `created_at`='2015-08-11 14:58:46', `updated_at`='2015-10-25 12:32:19', `deleted_at`=NULL WHERE (`bill_id`='8028');

@@ -1,4 +1,8 @@
 
+
+select * from `xb_company` where `company_id` = 100 limit 1
+
+
 CREATE DATABASE jke_sale
 
 

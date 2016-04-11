@@ -47,6 +47,9 @@ CALL _delay2('13770311837',1400.57,361.57)
 SELECT @uid;
 
 
+13771134023
+
+SELECT * FROM gzb_user_account WHERE uid= 29451;
 
 DROP PROCEDURE IF EXISTS `_delay2`;
 CREATE PROCEDURE `_delay2`(
@@ -68,7 +71,7 @@ BEGIN
 	SELECT pay_price,difference,payid INTO @pay_price,@difference,@payid 
 		FROM gzb_order_pay_task WHERE uid = @uid AND `status` = 1 ORDER BY id DESC LIMIT 1;
 
-	SET @a = @pay_price + @difference = @repay;+
+	SET @a = @pay_price + @difference = @repay;
 	SET @b = SUBSTR(@payid FROM LENGTH(@payid) FOR 1) = ']';
 	SET @c = SUBSTR(@payid FROM 1 FOR 1) = '[';
 
