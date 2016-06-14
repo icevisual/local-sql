@@ -1,4 +1,141 @@
 
+
+DROP TABLE IF EXISTS `xb_users`;
+DROP TABLE IF EXISTS `xb_jobs`;
+DROP TABLE IF EXISTS `xb_password_resets`;
+DROP TABLE IF EXISTS `xb_migration`;
+DROP TABLE IF EXISTS `xb_migrate_func`;
+DELETE FROM xb_migrations where batch > 1;
+
+SELECT * FROM xb_fbsdk_log ORDER BY created_at desc limit 1 
+
+
+SELECT NOW();
+
+
+SELECT * FROM xb_fbsdk_log WHERE created_at > '2016-04-22' ORDER BY created_at desc limit 1 
+
+CREATE TABLE `xb_migrate_func` (
+	`id` INT unsig ned NOT NULL auto_increment PRIMARY KEY,
+	`truename` VARCHAR (30) NULL,
+	`comp
+ any_id` INT NOT NULL auto_increment PRIMARY KEY,
+	`order_id` BIGINT NULL aut o_increment PRIMARY KEY,
+	`card_no` VARCHAR (40) NULL,
+	`bank_name` VARCHAR (40) NULL,
+	`salary` DECIMAL (11, 2) NULL DEFAULT '0',
+	`tax` DECIMAL (11, 2) NULL DEFAULT '0',
+	`result_status` TINYINT NULL DEFAULT '1' auto_increment prima ry KEY,
+	`process_status` TINYINT NULL DEFAULT '1' auto_increment PRIMARY ke y,
+	`api_type` SMALLINT NULL auto_increment PRIMARY KEY,
+	`pay_log_id` INT NO t NULL auto_increment PRIMARY KEY,
+	`query_log_id` INT NOT NULL auto_increme nt PRIMARY KEY,
+	`YURREF` VARCHAR (30) NOT NULL,
+	`REQNBR` VARCHAR (10) NOT nul l,
+	`pay_at` TIMESTAMP DEFAULT 0 NOT NULL,
+	`reason` VARCHAR (50) NOT NULL,
+	`s
+ uccess_at` TIMESTAMP DEFAULT 0 NOT NULL,
+	`failed_at` TIMESTAMP DEFAULT 0 NO t NULL,
+	`created_at` TIMESTAMP DEFAULT 0 NOT NULL,
+	`updated_at` TIMESTAMP d efault 0 NOT NULL
+) DEFAULT CHARACTER
+SET utf8 COLLATE utf8_general_ci
+
+
+
+
+
+SHOW CREATE TABLE xb_migrate_func
+
+SHOW CREATE TABLE xb_mcpay_detail
+
+CREATE TABLE `xb_migration` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'asd',
+  `bigInteger` bigint(20) NOT NULL,
+  `binary` blob NOT NULL,
+  `boolean` tinyint(1) NOT NULL,
+  `char` char(4) NOT NULL,
+  `date` date NOT NULL,
+  `datetime` datetime NOT NULL,
+  `decimal` decimal(5,2) NOT NULL,
+  `double` double(15,8) NOT NULL,
+  `enum` enum('foo','bar') NOT NULL,
+  `float` double(8,2) NOT NULL,
+  `integer` int(11) NOT NULL,
+  `json` text NOT NULL,
+  `jsonb` text NOT NULL,
+  `longText` longtext NOT NULL,
+  `mediumInteger` mediumint(9) NOT NULL,
+  `mediumText` mediumtext NOT NULL,
+  `morphs_id` int(10) unsigned NOT NULL,
+  `morphs_type` varchar(255) NOT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
+  `smallInteger` smallint(6) NOT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `string` varchar(255) NOT NULL,
+  `string_` varchar(100) NOT NULL,
+  `text` text NOT NULL,
+  `time` time NOT NULL,
+  `tinyInteger` tinyint(4) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `uuid` char(36) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `migration_morphs_id_morphs_type_index` (`morphs_id`,`morphs_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `xb_migrate_func` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='支付接口调用详情'
+
+
+SHOW CREATE TABLE xb_salary_pay
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+
+DROP TABLE IF EXISTS `xb_mcpay_detail`;
+CREATE TABLE `xb_mcpay_detail` (
+	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `log_id` int(11) NOT NULL COMMENT 'xb_fbsdk_log ID ',
+  `FUNNAM` varchar(50) DEFAULT NULL COMMENT 'API名字',
+  `YURREF` varchar(30) DEFAULT NULL COMMENT '业务参考号',
+  `TRSAMT` decimal(11,2) DEFAULT NULL COMMENT '金额',
+  `CRTSQN` varchar(20) DEFAULT NULL COMMENT '收方编号',
+  `CDTNAM_CRTNAM` varchar(100) DEFAULT NULL COMMENT '收款人户名',
+  `CDTEAC_CRTACC` varchar(35) DEFAULT NULL COMMENT '收款人账号',
+  `CDTBRD` varchar(12) DEFAULT NULL COMMENT '收款行行号',
+  `RTNFLG` varchar(2) DEFAULT NULL COMMENT '业务处理结果',
+  `ERRTXT` varchar(100) DEFAULT NULL COMMENT '错误文本',
+  `ERRCOD` varchar(10) DEFAULT NULL COMMENT '错误代码',
+  `REQNBR` varchar(12) DEFAULT NULL COMMENT '流程实例号',
+  `REQSTS` varchar(5) DEFAULT NULL COMMENT '请求状态',
+  `RTNTIM` varchar(5) DEFAULT NULL COMMENT '等待时间',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='支付接口调用详情'
+
+
+
+
+ALTER TABLE `xb_migrate_func`  COMMENT='支付接口调用详情'
+
+
+
+
+
+
+
+
+
+SHOW INDEX FROM xb_salary_order;
+SHOW INDEX FROM xb_salary_pay;
+
+
 STOP;
 ## At 2016-04-11 09:39:35 优化招薪宝-总后台-工资确认列表
 ##　时间: 6.196s

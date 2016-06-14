@@ -1,17 +1,76 @@
 
+UPDATE xb_salary_order
+LEFT JOIN xb_view_order_payed_amount ON xb_view_order_payed_amount.order_id = xb_salary_order.order_id
+SET 
+ xb_salary_order.payed_salary_amount = IFNULL(xb_view_order_payed_amount.payed_salary,0),
+ xb_salary_order.payed_tax_amount = IFNULL(xb_view_order_payed_amount.payed_tax,0),
+ xb_salary_order.payed_success_count = IFNULL(xb_view_order_payed_amount.payed_success_count,0),
+ xb_salary_order.payed_statistics_status = 1
+WHERE
+	xb_salary_order.payed_statistics_status = 0
+	AND xb_salary_order.`status` = 4
+	AND xb_salary_order.`pay_status` = 4;
+
+CREATE INDEX payed_statistics_status on xb_salary_order(payed_statistics_status)
+
+SHOW INDEX FROM xb_salary_order;
+SHOW INDEX FROM xb_salary_pay;
+SELECT
+	xb_salary_pay.order_id,
+	COUNT(xb_salary_pay.id) AS payed_success_count,
+	SUM(xb_salary_pay.salary) AS payed_salary,
+	SUM(xb_salary_pay.tax) AS payed_tax
+FROM
+	xb_salary_order
+JOIN xb_salary_pay ON xb_salary_order.order_id = xb_salary_pay.order_id
+AND xb_salary_pay.result_status = 0
+AND xb_salary_pay.process_status = 0
+AND xb_salary_order.`status` = 4
+AND xb_salary_order.`pay_status` = 4
+AND xb_salary_order.`payed_statistics_status` = 0
+GROUP BY
+	xb_salary_pay.order_id
 
 
 
+SHOW CREATE TABLE mysql.slow_log;
+
+SELECT * FROM  mysql.slow_log;
+
+CREATE TABLE `slow_log` (
+  `start_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `user_host` mediumtext NOT NULL,
+  `query_time` time NOT NULL,
+  `lock_time` time NOT NULL,
+  `rows_sent` int(11) NOT NULL,
+  `rows_examined` int(11) NOT NULL,
+  `db` varchar(512) NOT NULL,
+  `last_insert_id` int(11) NOT NULL,
+  `insert_id` int(11) NOT NULL,
+  `server_id` int(10) unsigned NOT NULL,
+  `sql_text` mediumtext NOT NULL,
+  `thread_id` bigint(21) unsigned NOT NULL
+) ENGINE=CSV DEFAULT CHARSET=utf8 COMMENT='Slow log'
 
 
 
+show variables like 'log_slow_queries'; 
 
+ show variables like 'long_query_time';
 
+show variables like '%quer%';
 
-
-
-
-
+DROP TABLE IF EXISTS `xb_request_log`;
+CREATE TABLE `xb_request_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varchar(100) NOT NULL COMMENT 'IP',
+  `uri` varchar(100) DEFAULT NULL COMMENT '路由',
+  `params` text DEFAULT NULL COMMENT '参数',
+  `time_usage` DECIMAL(10,4) NOT NULL DEFAULT '0.0000' COMMENT '时间使用量S',
+  `memory_usage` DECIMAL(10,4) NOT NULL DEFAULT '0.0000' COMMENT '内存使用量MB',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='请求日志'
 
 
 SHOW CREATE TABLE xb_article
