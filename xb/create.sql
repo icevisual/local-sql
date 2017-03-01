@@ -1,3 +1,8 @@
+
+
+
+
+
 CREATE DATABASE mycncart
 
 DROP TABLE  IF EXISTS `xb_join_quit_log`;

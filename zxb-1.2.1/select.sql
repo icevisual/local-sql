@@ -1,4 +1,222 @@
 
+
+
+SHOW CREATE TABLE xb_request_log
+
+SHOW CREATE TABLE xb_ant_log
+
+ALTER TABLE xb_ant_log add COLUMN `time_usage` decimal(12,8) NOT NULL DEFAULT '0.00000000' COMMENT '时间使用量S' AFTER send_status;
+ALTER TABLE xb_ant_log add COLUMN `memory_usage` decimal(12,8) NOT NULL DEFAULT '0.00000000' COMMENT '内存使用量MB' AFTER time_usage;
+
+ALTER TABLE xb_ant_log MODIFY COLUMN  `send_status` smallint(2) DEFAULT '0' COMMENT '发送状态1成功,2失败'
+
+ALTER TABLE xb_ant_log add COLUMN `verify_error` varchar(100) DEFAULT NULL COMMENT '验证错误信息' AFTER verify_status;
+
+
+ALTER TABLE xb_ant_log CHANGE req_time req_time varchar(50) DEFAULT NULL COMMENT '时间' ;
+ALTER TABLE xb_ant_log CHANGE reqMsgId req_msg_id varchar(50) DEFAULT NULL COMMENT 'UUID';
+ALTER TABLE xb_ant_log CHANGE signString sign_string varchar(255) DEFAULT NULL COMMENT '发送的XML' ;
+
+
+       "resultStatus" => "S"
+          "resultCode" => "0000"
+          "resultMsg" => "成功"
+ALTER TABLE xb_ant_log add COLUMN `result_status`  VARCHAR(20)  NULL DEFAULT '' COMMENT 'resultStatus' AFTER verify_error;
+ALTER TABLE xb_ant_log add COLUMN `result_code`  VARCHAR(20)   NULL DEFAULT '' COMMENT 'resultCode' AFTER result_status;
+ALTER TABLE xb_ant_log add COLUMN `result_msg` VARCHAR(100) NULL DEFAULT '' COMMENT 'resultMsg' AFTER result_code;
+
+
+CREATE TABLE `xb_ant_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `req_time` varchar(50) DEFAULT NULL COMMENT '时间',
+  `req_msg_id` varchar(50) DEFAULT NULL COMMENT 'UUID',
+  `function` varchar(50) DEFAULT NULL COMMENT '接口',
+  `sign_string` varchar(255) DEFAULT NULL COMMENT '发送的XML',
+  `send_xml` text COMMENT '发送的XML',
+  `received_xml` text COMMENT '接收到的XML',
+  `send_status` smallint(2) DEFAULT '0' COMMENT '发送状态1成功,2失败',
+  `send_error` varchar(100) DEFAULT NULL COMMENT '错误信息',
+  `time_usage` decimal(12,8) NOT NULL DEFAULT '0.00000000' COMMENT '时间使用量S',
+  `memory_usage` decimal(12,8) NOT NULL DEFAULT '0.00000000' COMMENT '内存使用量MB',
+  `verify_status` tinyint(4) DEFAULT '1' COMMENT '验签状态，1未验签，2成功，3失败',
+  `verify_error` varchar(100) DEFAULT NULL COMMENT '验证错误信息',
+  `result_status` varchar(20) DEFAULT '' COMMENT 'resultStatus',
+  `result_code` varchar(20) DEFAULT '' COMMENT 'resultCode',
+  `result_msg` varchar(100) DEFAULT '' COMMENT 'resultMsg',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=utf8 COMMENT='网商银行报文日志';
+
+
+CREATE TABLE `xb_request_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varchar(100) NOT NULL COMMENT 'IP',
+  `uri` varchar(100) DEFAULT NULL COMMENT '路由',
+  `params` text COMMENT '参数',
+  `time_usage` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '时间使用量S',
+  `memory_usage` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '内存使用量MB',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8033 DEFAULT CHARSET=utf8 COMMENT='请求日志'
+
+
+
+
+
+DROP TABLE IF EXISTS `xb_ant_log`;
+CREATE TABLE `xb_ant_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reqTime` varchar(50) DEFAULT NULL COMMENT '时间',
+  `reqMsgId` varchar(50) DEFAULT NULL COMMENT 'UUID',
+  `function` varchar(50) DEFAULT NULL COMMENT '接口',
+  `signString` varchar(255) COMMENT '发送的XML',
+  `send_xml` text COMMENT '发送的XML',
+  `received_xml` text COMMENT '接收到的XML',
+  `send_status` smallint(2) DEFAULT '0' COMMENT '发送状态0失败，1成功',
+  `send_error` varchar(100) DEFAULT NULL COMMENT '错误信息',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='网商银行报文日志'
+
+
+ALTER TABLE xb_ant_log ADD COLUMN verify_status TINYINT DEFAULT 1 COMMENT '验签状态，1未验签，2成功，3失败';
+
+42590
+
+SELECT 42590/365
+
+SELECT TO_DAYS('2016/8/8')
+
+DROP DATABASE `xb-str-0717`;
+
+CREATE DATABASE `xb-str-0717`;
+
+
+
+ALTER TABLE xb_employee_company ADD COLUMN delete_status  tinyint(4) DEFAULT '1' COMMENT '删除状态1未删除，2已删除' AFTER `status`;
+
+ALTER TABLE xb_employee_company DROP COLUMN delete_status  ;
+
+
+
+SHOW CREATE TABLE xb_fbsdk_log
+
+DROP TABLE IF EXISTS `xb_backup_data`;
+CREATE TABLE `xb_backup_data` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) DEFAULT NULL COMMENT 'API名字',
+  `data` text DEFAULT NULL COMMENT '数据',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='备份'
+
+
+
+
+
+
+SELECT
+	`xb_salary_pay`.`company_id`,
+	`xb_salary_pay`.`order_id`,
+	GROUP_CONCAT(
+		'#E#',
+		xb_salary_payroll_value.payroll_id,
+		'#E#'
+	) AS property_id
+FROM
+	`xb_salary_pay`
+LEFT JOIN `xb_salary_payroll_value` ON `xb_salary_pay`.`id` = `xb_salary_payroll_value`.`pay_id`
+GROUP BY
+	`xb_salary_pay`.`id`
+LIMIT 10000 
+
+DROP DATABASE `xb-str-0717`;
+
+CREATE DATABASE `xb-str-0717`;
+
+DESC xb_company
+
+
+SELECT name,account_id,fudou_avaliable FROM xb_company GROUP BY `name`
+
+SHOW VARIABLES LIKE 'only_full_group_by';
+
+STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY
+
+CREATE DATABASE `xb-str`
+
+
+SELECT @sql_mode 
+
+
+SELECT @@sql_mode ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+
+STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+
+SET @@sql_mode='STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY'
+
+SET @@sql_mode='STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION'
+
+select `name`, `specification`, `supplier_id` from `sm_material` where (`sm_material`.`is_del` = '0') group by `name`
+ANY_VALUE
+
+-- ----------------------------
+-- Table structure for `sm_material`
+-- ----------------------------
+DROP TABLE IF EXISTS `sm_material`;
+CREATE TABLE `sm_material` (
+  `m_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '名称',
+  `category_id` smallint(5) unsigned DEFAULT NULL COMMENT '分类id',
+  `url` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'URL地址',
+  `specification` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '规格',
+  `amount` mediumint(8) unsigned DEFAULT NULL COMMENT '数量',
+  `is_del` enum('1','0') COLLATE utf8_unicode_ci DEFAULT '0',
+  `create_at` int(11) DEFAULT NULL,
+  `update_at` int(11) DEFAULT NULL,
+  `project_id` smallint(5) unsigned DEFAULT NULL COMMENT '项目id',
+  `supplier_id` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '供应商id',
+  `unit` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '单位',
+  `freeze` smallint(5) unsigned DEFAULT '0' COMMENT '冻结',
+  `borrow` smallint(5) unsigned DEFAULT NULL COMMENT '借用',
+  PRIMARY KEY (`m_id`),
+  KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- ----------------------------
+-- Records of sm_material
+-- ----------------------------
+INSERT INTO `sm_material` VALUES ('5', 'gt860显卡', '1', null, 'BAM1.05-30-1W', '4', '0', '1466596002', null, '3', '7', '个', '0', null);
+INSERT INTO `sm_material` VALUES ('6', 'gt860显卡', '1', null, 'BAM1.05-30-1W', '2', '0', '1466598458', null, '3', '2', '个', '0', null);
+INSERT INTO `sm_material` VALUES ('7', 'gt860', '1', 'http://baidu.com', 'BAM1.05-30-1W', '5', '0', '1466598794', null, '3', '2', '个', '0', null);
+
+
+
+SELECT
+	xb_salary_order.order_id,
+	xb_salary_order.company_id,
+	xb_salary_order.payment_at,
+	xb_salary_order.pay_at,
+  xb_salary_order.created_at,
+	COUNT(xb_salary_pay.id) AS pay_count,
+	SUM(xb_salary_pay.salary - xb_salary_pay.tax) AS amount
+FROM
+	xb_salary_order
+JOIN xb_salary_pay ON xb_salary_order.order_id = xb_salary_pay.order_id
+WHERE
+	xb_salary_order.`status` = 3 
+GROUP BY xb_salary_order.order_id
+ORDER BY xb_salary_order.payment_at,xb_salary_order.created_at
+
+
+SELECT * FROM xb_company_pay_conf WHERE company_id = 154
+
+
+
+
+select reason ,api_type FROM xb_salary_pay GROUP BY reason
+
+
 SELECT
 	SUM(
 		xb_salary_pay.salary - xb_salary_pay.tax

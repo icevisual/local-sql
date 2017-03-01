@@ -1,4 +1,76 @@
 
+
+
+INSERT INTO `xb_company_payroll_property` (`id`, `company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`) VALUES ('293', '145', '4', '4', '4', '1', '2016-07-06 17:16:01');
+INSERT INTO `zxb-1.2.1`.`xb_company_payroll_property` (`id`, `company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`) VALUES ('292', '145', '3', '3', '3', '1', '2016-07-06 17:16:01');
+INSERT INTO `zxb-1.2.1`.`xb_company_payroll_property` (`id`, `company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`) VALUES ('291', '145', '2', '2', '2', '1', '2016-07-06 17:16:01');
+INSERT INTO `zxb-1.2.1`.`xb_company_payroll_property` (`id`, `company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`) VALUES ('290', '145', '1', '1', '1', '1', '2016-07-06 17:16:01');
+
+SELECT id FROM xb_payroll_property WHERE required = 1 
+
+
+
+SELECT
+	xb_company.company_id
+FROM
+	xb_company
+LEFT JOIN xb_company_payroll_property ON xb_company.company_id = xb_company_payroll_property.company_id
+WHERE
+	xb_company_payroll_property.id IS NULL
+
+
+
+DROP PROCEDURE IF EXISTS `insertDefaultPayrollProperties`;
+CREATE PROCEDURE `insertDefaultPayrollProperties`()
+BEGIN
+	DECLARE _company_id int(11) ;
+	DECLARE _company_id_str VARCHAR(255) ;
+	DECLARE _done TINYINT ;
+	DECLARE _cursor CURSOR FOR SELECT
+			xb_company.company_id
+		FROM
+			xb_company
+		LEFT JOIN xb_company_payroll_property ON xb_company.company_id = xb_company_payroll_property.company_id
+		WHERE
+			xb_company_payroll_property.id IS NULL;
+
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET _done = 1 ;
+
+	SET _done = 0 ;
+	OPEN _cursor ;
+	_cursor_loop:LOOP
+		IF _done = 1 THEN
+			LEAVE _cursor_loop;
+		ELSE
+			FETCH _cursor INTO _company_id;
+			SET _company_id_str = CONCAT(_company_id_str,',',_company_id_str);
+      INSERT INTO `xb_company_payroll_property` (`company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`)
+			VALUES ( _company_id, 1, 1, 1, 1, now());
+			INSERT INTO `xb_company_payroll_property` (`company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`)
+			VALUES ( _company_id, 2, 2, 2, 1, now());
+			INSERT INTO `xb_company_payroll_property` (`company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`)
+			VALUES ( _company_id, 3, 3, 3, 1, now());
+			INSERT INTO `xb_company_payroll_property` (`company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`)
+			VALUES ( _company_id, 4, 4, 4, 1, now());
+		END IF;
+	END LOOP;
+END;
+
+
+CALL insertDefaultPayrollProperties();
+
+(`company_id`, `payroll_id`, `excel_sort`, `weixin_sort`, `is_weixin_show`, `created_at`)
+
+UPDATE xb_salary_order SET `year_month` = CONCAT(SUBSTR(created_at FROM 1 FOR 8),'01')
+
+
+SELECT NOW()
+
+ALTER TABLE xb_company ADD COLUMN `business_type` TINYINT(2) DEFAULT 1 COMMENT '业务列别，1不含员工福豆，2包含' AFTER type;
+
+
+
+
 ALTER TABLE `xb_company` ADD COLUMN `has_tax_return` TINYINT(1) NULL DEFAULT '2' COMMENT '个税返还状态，1返还，2不返还' AFTER `type`;
 ALTER TABLE `xb_company` ADD COLUMN `service_fee` DECIMAL(10,2) NULL DEFAULT '0.00' COMMENT '服务费收费标准（元 / 人 / 次）' AFTER `has_tax_return`;
 ALTER TABLE `xb_company` ADD COLUMN `tax_invoice_proportion` DECIMAL(5,2) NULL DEFAULT '0.00' COMMENT '开票税金比例 ' AFTER `service_fee`;
